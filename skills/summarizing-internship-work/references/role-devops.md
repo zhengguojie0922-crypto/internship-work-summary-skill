@@ -6,6 +6,7 @@
 - Trace a change through workflow triggers, build and test jobs, artifact provenance, infrastructure, configuration, and secrets references.
 - Include deployment, health, rollback, observability, alerting, incident response, cost controls, and recovery only when sources identify them.
 - Separate configured capability from an actual execution record and from an operational result seen after execution.
+- Configured capability, execution evidence, and operational outcome are separate evidence layers.
 - Separate pipeline authorship from application authorship, release approval, service ownership, and incident command.
 - Treat a workflow file as configuration evidence, not evidence that every job ran or every stage deployed.
 - Treat infrastructure definitions as intended resource state, not proof that a provider accepted or applied the change.

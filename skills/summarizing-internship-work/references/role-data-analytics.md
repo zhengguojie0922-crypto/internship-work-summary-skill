@@ -5,6 +5,7 @@
 - Treat data analytics work as source contracts, ingestion, staging, transformation, SQL models, semantic metrics, quality controls, scheduling, dashboards, and consumers.
 - Set the evidence boundary from an identified source field through modeled data, metric definition, validated output, and a documented consumer decision.
 - Separate SQL behavior from the metric meaning it implements, the quality evidence it has, and any business outcome attributed to it.
+- SQL behavior, metric semantics, data-quality evidence, and business-decision evidence are separate evidence layers.
 - Include source ownership, warehouse administration, dashboard design, experimentation, and stakeholder decisions only when direct evidence supports each role.
 - Treat a dashboard consumer as evidence of an audience or access path, not proof that the dashboard changed a decision.
 - Treat source contracts, schemas, and model definitions as declared structure rather than proof of fresh, complete, or accurate data.

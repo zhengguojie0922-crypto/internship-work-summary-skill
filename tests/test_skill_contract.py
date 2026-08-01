@@ -193,8 +193,8 @@ class SkillContractTests(unittest.TestCase):
         line_count = len(text.splitlines())
         self.assertGreaterEqual(line_count, 120, filename)
         self.assertLessEqual(line_count, 180, filename)
-        for heading in ROLE_REQUIRED_HEADINGS:
-            self.assertIn(heading, text, filename)
+        headings = tuple(re.findall(r"(?m)^## .*$", text))
+        self.assertEqual(ROLE_REQUIRED_HEADINGS, headings, filename)
         for marker in markers:
             self.assertIn(marker, text, filename)
         self.assertIn("main consolidated confirmation process", text, filename)
@@ -292,6 +292,14 @@ class SkillContractTests(unittest.TestCase):
                 "recovery objective",
             ),
         )
+        text = (SKILL_DIR / "references" / "role-devops.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "Configured capability, execution evidence, and operational outcome "
+            "are separate evidence layers.",
+            text,
+        )
 
     def test_data_analytics_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
@@ -304,6 +312,14 @@ class SkillContractTests(unittest.TestCase):
                 "experiment bias",
                 "dashboard consumer",
             ),
+        )
+        text = (SKILL_DIR / "references" / "role-data-analytics.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "SQL behavior, metric semantics, data-quality evidence, and "
+            "business-decision evidence are separate evidence layers.",
+            text,
         )
 
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
