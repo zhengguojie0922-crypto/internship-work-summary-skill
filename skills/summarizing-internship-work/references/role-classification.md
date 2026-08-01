@@ -1,6 +1,6 @@
 # Role Classification
 
-Classify work nonexclusively. Assign one primary role from the dominant evidence chain and zero or more secondary roles from meaningful supporting evidence. Do not force a single label onto cross-functional work.
+Classify work from the dominant direct evidence chain and the confirmed target role. Select exactly one primary role guide. Select at most one secondary role guide only when direct cross-role evidence is necessary to explain a dependency, interface, or collaboration boundary. The target role remains the organizing perspective, and secondary evidence does not establish secondary ownership.
 
 ## Role Routing
 
@@ -16,4 +16,4 @@ Classify work nonexclusively. Assign one primary role from the dominant evidence
 
 Treat labels as ambiguous when two roles have comparable direct evidence or when only filenames/commit messages imply a role. Retain both candidate classifications and avoid converting target preference into evidence. Route any genuinely material missing target-role information through the main consolidated confirmation process; role classification does not add confirmation rounds.
 
-Route to every applicable role file directly: `role-frontend.md`, `role-backend.md`, `role-client.md`, `role-testing.md`, `role-devops.md`, `role-data-analytics.md`, and `role-algorithm.md`. Use the primary role to order career material and secondary roles to frame collaboration or breadth.
+Load the shared `role-analysis-framework.md` and exactly one primary role guide. Load at most one secondary role guide when direct cross-role evidence meets the boundary above. Use the primary role to order career material and the secondary role only to frame collaboration or breadth. For a target role outside the seven supported categories, choose the closest primary guide and state the mapping reason and unsupported boundary in the final document.
