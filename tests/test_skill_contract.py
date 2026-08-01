@@ -239,8 +239,18 @@ class SkillContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(
-            "Read/cache: handler -> service -> repository/cache -> cache miss or "
-            "repository failure -> invalidation path -> response and test boundary.",
+            "Read/cache hit: cache hit -> response -> contract/integration test "
+            "boundary.",
+            text,
+        )
+        self.assertIn(
+            "Read/cache miss: cache miss -> repository read -> optional cache fill -> "
+            "response -> contract/integration test boundary.",
+            text,
+        )
+        self.assertIn(
+            "Repository failure: repository read -> mapped error response -> "
+            "contract/integration test boundary.",
             text,
         )
 

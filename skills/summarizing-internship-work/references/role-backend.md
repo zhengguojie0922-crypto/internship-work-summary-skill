@@ -30,7 +30,9 @@ Trace a request or background behavior through source, failure handling, and val
 - Request/response: route -> middleware -> validator -> service -> repository -> response and test boundary.
 - Record invalid input, authorization failure, timeout, and mapped error response in that chain.
 - Write transaction: handler -> service -> transaction boundary -> persistence -> commit/rollback and test boundary.
-- Read/cache: handler -> service -> repository/cache -> cache miss or repository failure -> invalidation path -> response and test boundary.
+- Read/cache hit: cache hit -> response -> contract/integration test boundary.
+- Read/cache miss: cache miss -> repository read -> optional cache fill -> response -> contract/integration test boundary.
+- Repository failure: repository read -> mapped error response -> contract/integration test boundary.
 - Async message: producer -> broker contract -> consumer -> retry/dead-letter path -> test boundary.
 - Scheduled job: scheduler -> job handler -> dependency -> partial-failure handling -> test boundary.
 - Authorization decision: identity -> authorization policy -> protected operation -> denial test boundary.
