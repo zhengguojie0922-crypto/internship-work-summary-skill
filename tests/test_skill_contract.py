@@ -280,6 +280,32 @@ class SkillContractTests(unittest.TestCase):
             ),
         )
 
+    def test_devops_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-devops.md",
+            (
+                "artifact provenance",
+                "environment parity",
+                "progressive delivery",
+                "rollback trigger",
+                "least privilege",
+                "recovery objective",
+            ),
+        )
+
+    def test_data_analytics_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-data-analytics.md",
+            (
+                "metric grain",
+                "late-arriving data",
+                "slowly changing dimension",
+                "data lineage",
+                "experiment bias",
+                "dashboard consumer",
+            ),
+        )
+
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
         text = (SKILL_DIR / "references" / "role-classification.md").read_text(encoding="utf-8")
         self.assertIn("main consolidated confirmation process", text)
