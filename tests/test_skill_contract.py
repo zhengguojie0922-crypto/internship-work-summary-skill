@@ -214,6 +214,14 @@ class SkillContractTests(unittest.TestCase):
                 "end-to-end user flow",
             ),
         )
+        text = (SKILL_DIR / "references" / "role-frontend.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "Design-system component: consumer -> shared primitive -> token or style -> "
+            "browser visual-regression test boundary.",
+            text,
+        )
 
     def test_backend_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
@@ -226,6 +234,14 @@ class SkillContractTests(unittest.TestCase):
                 "authorization policy",
                 "observability",
             ),
+        )
+        text = (SKILL_DIR / "references" / "role-backend.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "Read/cache: handler -> service -> repository/cache -> cache miss or "
+            "repository failure -> invalidation path -> response and test boundary.",
+            text,
         )
 
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:

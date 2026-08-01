@@ -34,7 +34,7 @@ Trace a user-visible behavior through source and tests before drafting career ma
 - Record disabled states, duplicate-submission protection, and response-to-UI mapping.
 - List/detail cache: list query -> cache key -> detail mutation -> invalidation -> API boundary.
 - Permission-gated UI: identity state -> authorization check -> rendered branch -> browser-test boundary.
-- Design-system component: consumer -> shared primitive -> token or style -> visual-test boundary.
+- Design-system component: consumer -> shared primitive -> token or style -> browser visual-regression test boundary.
 - Analytics event: user action -> handler -> event payload -> analytics API boundary.
 - Call a flow end-to-end only when browser E2E or direct evidence spans its user boundary.
 - Stop the chain at an opaque SDK, untested browser interaction, or undocumented API response.
