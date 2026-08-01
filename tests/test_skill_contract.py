@@ -254,6 +254,32 @@ class SkillContractTests(unittest.TestCase):
             text,
         )
 
+    def test_client_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-client.md",
+            (
+                "lifecycle transition",
+                "offline queue",
+                "weak-network",
+                "thread confinement",
+                "resource pressure",
+                "platform adaptation",
+            ),
+        )
+
+    def test_testing_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-testing.md",
+            (
+                "risk model",
+                "test pyramid",
+                "fixture isolation",
+                "flaky-test",
+                "mutation testing",
+                "release gate",
+            ),
+        )
+
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
         text = (SKILL_DIR / "references" / "role-classification.md").read_text(encoding="utf-8")
         self.assertIn("main consolidated confirmation process", text)
