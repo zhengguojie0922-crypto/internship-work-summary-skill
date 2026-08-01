@@ -84,11 +84,22 @@ def read_frontmatter(text: str) -> tuple[dict[str, str], str]:
     return fields, match.group("body")
 
 
+def read_level_two_headings(text: str) -> tuple[str, ...]:
+    return tuple(re.findall(r"(?m)^##[ \t].*$", text))
+
+
 class SkillContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.text = SKILL_PATH.read_text(encoding="utf-8")
         cls.frontmatter, cls.body = read_frontmatter(cls.text)
+
+    def test_level_two_heading_reader_accepts_space_and_tab_separators(self) -> None:
+        text = "## Space heading\n##\tTab heading\n"
+        self.assertEqual(
+            ("## Space heading", "##\tTab heading"),
+            read_level_two_headings(text),
+        )
 
     def test_frontmatter_triggers_internship_resume_and_interview_requests(self) -> None:
         self.assertEqual("summarizing-internship-work", self.frontmatter["name"])
@@ -193,7 +204,7 @@ class SkillContractTests(unittest.TestCase):
         line_count = len(text.splitlines())
         self.assertGreaterEqual(line_count, 120, filename)
         self.assertLessEqual(line_count, 180, filename)
-        headings = tuple(re.findall(r"(?m)^## .*$", text))
+        headings = read_level_two_headings(text)
         self.assertEqual(ROLE_REQUIRED_HEADINGS, headings, filename)
         for marker in markers:
             self.assertIn(marker, text, filename)
