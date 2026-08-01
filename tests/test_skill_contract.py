@@ -25,6 +25,71 @@ ROLE_REQUIRED_HEADINGS = (
     "## Interview Question Tree",
     "## Overclaim Guardrails",
 )
+DECISION_MATRIX_HEADER = (
+    "| Decision | Evidence to inspect | Supported claim | Prohibited inference |"
+)
+CONSOLIDATED_CONFIRMATION_SENTENCE = (
+    "Route material gaps through the main consolidated confirmation process; this guide "
+    "does not add confirmation rounds or request Git identity for a named-feature route."
+)
+ROLE_MARKERS = {
+    "role-frontend.md": (
+        "request race",
+        "rendering boundary",
+        "accessibility tree",
+        "Core Web Vitals",
+        "design-system",
+        "end-to-end user flow",
+    ),
+    "role-backend.md": (
+        "idempotency",
+        "transaction boundary",
+        "cache invalidation",
+        "message delivery",
+        "authorization policy",
+        "observability",
+    ),
+    "role-client.md": (
+        "lifecycle transition",
+        "offline queue",
+        "weak-network",
+        "thread confinement",
+        "resource pressure",
+        "platform adaptation",
+    ),
+    "role-testing.md": (
+        "risk model",
+        "test pyramid",
+        "fixture isolation",
+        "flaky-test",
+        "mutation testing",
+        "release gate",
+    ),
+    "role-devops.md": (
+        "artifact provenance",
+        "environment parity",
+        "progressive delivery",
+        "rollback trigger",
+        "least privilege",
+        "recovery objective",
+    ),
+    "role-data-analytics.md": (
+        "metric grain",
+        "late-arriving data",
+        "slowly changing dimension",
+        "data lineage",
+        "experiment bias",
+        "dashboard consumer",
+    ),
+    "role-algorithm.md": (
+        "label leakage",
+        "baseline",
+        "offline evaluation",
+        "online experiment",
+        "model drift",
+        "inference budget",
+    ),
+}
 
 TRIGGERS = (
     "实习产出",
@@ -86,6 +151,29 @@ def read_frontmatter(text: str) -> tuple[dict[str, str], str]:
 
 def read_level_two_headings(text: str) -> tuple[str, ...]:
     return tuple(re.findall(r"(?m)^##[ \t].*$", text))
+
+
+def find_marker_sections(
+    text: str, markers: tuple[str, ...]
+) -> dict[str, tuple[str, ...]]:
+    heading_matches = list(re.finditer(r"(?m)^(##[ \t].*)$", text))
+    sections: dict[str, str] = {}
+    for index, match in enumerate(heading_matches):
+        heading = match.group(1)
+        if heading not in ROLE_REQUIRED_HEADINGS:
+            continue
+        end = (
+            heading_matches[index + 1].start()
+            if index + 1 < len(heading_matches)
+            else len(text)
+        )
+        sections[heading] = text[match.end() : end]
+    return {
+        marker: tuple(
+            heading for heading, body in sections.items() if marker in body
+        )
+        for marker in markers
+    }
 
 
 class SkillContractTests(unittest.TestCase):
@@ -196,6 +284,8 @@ class SkillContractTests(unittest.TestCase):
             text = guide.read_text(encoding="utf-8")
             self.assertIn("main consolidated confirmation process", text, guide.name)
             self.assertIn("does not add confirmation rounds", text, guide.name)
+            if guide.name in {"role-client.md", "role-testing.md"}:
+                self.assertIn(CONSOLIDATED_CONFIRMATION_SENTENCE, text, guide.name)
             self.assertNotRegex(text, r"(?im)^Ask\b", guide.name)
             self.assertNotRegex(text, r"(?i)ask[^.]*Git identity", guide.name)
 
@@ -206,8 +296,24 @@ class SkillContractTests(unittest.TestCase):
         self.assertLessEqual(line_count, 180, filename)
         headings = read_level_two_headings(text)
         self.assertEqual(ROLE_REQUIRED_HEADINGS, headings, filename)
+        self.assertIn(DECISION_MATRIX_HEADER, text, filename)
         for marker in markers:
             self.assertIn(marker, text, filename)
+        marker_sections = find_marker_sections(text, markers)
+        for marker, sections in marker_sections.items():
+            self.assertTrue(
+                sections,
+                f"{filename}: {marker!r} is outside the required H2 sections",
+            )
+        covered_sections = {
+            section for sections in marker_sections.values() for section in sections
+        }
+        self.assertGreaterEqual(
+            len(covered_sections),
+            4,
+            f"{filename}: role markers must span at least four required H2 sections; "
+            f"marker locations: {marker_sections!r}",
+        )
         self.assertIn("main consolidated confirmation process", text, filename)
         self.assertIn("does not add confirmation rounds", text, filename)
         self.assertNotRegex(text, r"(?im)^Ask\b", filename)
@@ -216,14 +322,7 @@ class SkillContractTests(unittest.TestCase):
     def test_frontend_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-frontend.md",
-            (
-                "request race",
-                "rendering boundary",
-                "accessibility tree",
-                "Core Web Vitals",
-                "design-system",
-                "end-to-end user flow",
-            ),
+            ROLE_MARKERS["role-frontend.md"],
         )
         text = (SKILL_DIR / "references" / "role-frontend.md").read_text(
             encoding="utf-8"
@@ -237,14 +336,7 @@ class SkillContractTests(unittest.TestCase):
     def test_backend_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-backend.md",
-            (
-                "idempotency",
-                "transaction boundary",
-                "cache invalidation",
-                "message delivery",
-                "authorization policy",
-                "observability",
-            ),
+            ROLE_MARKERS["role-backend.md"],
         )
         text = (SKILL_DIR / "references" / "role-backend.md").read_text(
             encoding="utf-8"
@@ -268,40 +360,19 @@ class SkillContractTests(unittest.TestCase):
     def test_client_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-client.md",
-            (
-                "lifecycle transition",
-                "offline queue",
-                "weak-network",
-                "thread confinement",
-                "resource pressure",
-                "platform adaptation",
-            ),
+            ROLE_MARKERS["role-client.md"],
         )
 
     def test_testing_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-testing.md",
-            (
-                "risk model",
-                "test pyramid",
-                "fixture isolation",
-                "flaky-test",
-                "mutation testing",
-                "release gate",
-            ),
+            ROLE_MARKERS["role-testing.md"],
         )
 
     def test_devops_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-devops.md",
-            (
-                "artifact provenance",
-                "environment parity",
-                "progressive delivery",
-                "rollback trigger",
-                "least privilege",
-                "recovery objective",
-            ),
+            ROLE_MARKERS["role-devops.md"],
         )
         text = (SKILL_DIR / "references" / "role-devops.md").read_text(
             encoding="utf-8"
@@ -315,14 +386,7 @@ class SkillContractTests(unittest.TestCase):
     def test_data_analytics_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-data-analytics.md",
-            (
-                "metric grain",
-                "late-arriving data",
-                "slowly changing dimension",
-                "data lineage",
-                "experiment bias",
-                "dashboard consumer",
-            ),
+            ROLE_MARKERS["role-data-analytics.md"],
         )
         text = (SKILL_DIR / "references" / "role-data-analytics.md").read_text(
             encoding="utf-8"
@@ -336,14 +400,7 @@ class SkillContractTests(unittest.TestCase):
     def test_algorithm_guide_has_role_specific_depth(self) -> None:
         self._assert_deep_role_guide(
             "role-algorithm.md",
-            (
-                "label leakage",
-                "baseline",
-                "offline evaluation",
-                "online experiment",
-                "model drift",
-                "inference budget",
-            ),
+            ROLE_MARKERS["role-algorithm.md"],
         )
 
     def test_exactly_seven_distinct_deep_role_guides_exist(self) -> None:
@@ -353,13 +410,9 @@ class SkillContractTests(unittest.TestCase):
             if path.name not in {"role-analysis-framework.md", "role-classification.md"}
         )
         self.assertEqual(7, len(role_guides))
-        bodies = []
+        self.assertEqual(set(ROLE_MARKERS), {guide.name for guide in role_guides})
         for guide in role_guides:
-            text = guide.read_text(encoding="utf-8")
-            for heading in ROLE_REQUIRED_HEADINGS:
-                self.assertIn(heading, text, guide.name)
-            bodies.append(text)
-        self.assertEqual(len(bodies), len(set(bodies)))
+            self._assert_deep_role_guide(guide.name, ROLE_MARKERS[guide.name])
 
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
         text = (SKILL_DIR / "references" / "role-classification.md").read_text(encoding="utf-8")

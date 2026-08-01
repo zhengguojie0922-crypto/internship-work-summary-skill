@@ -42,16 +42,18 @@
 
 ## Technical Decision Matrix
 
-- risk model: rank behavior by user harm, likelihood, change surface, detectability, and recovery before selecting test effort.
-- test pyramid: place fast deterministic checks low in the stack and reserve broad UI or end-to-end coverage for high-value journeys.
-- Boundary selection: choose unit, integration, contract, UI, or device layers based on the failure that each layer can reveal.
-- fixture isolation: create independent data, resource names, state, and cleanup so tests do not depend on execution order.
-- Real dependency versus double: prefer a real dependency where its behavior is the contract under test; use a double to control an external boundary.
-- Deterministic time: inject or freeze clocks, timers, and schedules so timing is an explicit test input rather than ambient state.
-- Deterministic randomness: seed or replace random generators when values affect branching, ordering, or assertions.
-- Parallelism: enable it only when fixtures, ports, accounts, queues, and cleanup can remain independent under concurrent load.
-- Retry policy: retry infrastructure failures with bounded evidence; do not use retries to hide flaky-test behavior or incorrect assertions.
-- Release policy: define required suites, allowed exceptions, quarantine rules, and review ownership before interpreting a release gate result.
+| Decision | Evidence to inspect | Supported claim | Prohibited inference |
+|---|---|---|---|
+| risk model | Requirements, defect history, harm, likelihood, change surface, detectability, recovery, and prioritization records | Test effort targets the named risks using the evidenced ranking factors | The model is complete, prevents defects, or represents every stakeholder risk |
+| test pyramid | Suite layout, selection commands, runtime records, dependency boundaries, and critical-journey coverage | The evidenced behaviors are placed at named unit, integration, contract, UI, or end-to-end layers | Pyramid shape proves optimal coverage, fast feedback, or production correctness |
+| Boundary selection | Failure hypothesis, test layer, dependency setup, oracle, and linked product boundary | The selected layer can reveal the stated failure within its demonstrated boundary | One layer covers behavior owned by unexecuted dependencies or environments |
+| fixture isolation | Factories, unique resource names, setup, cleanup, reordered runs, and parallel results | Test data and resources are isolated for the evidenced execution scope | Independent-looking fixtures prove order independence or safe parallelism everywhere |
+| Real dependency versus double | Contract under test, fake or mock behavior, real-service setup, and comparison tests | The chosen dependency boundary controls or exercises the named behavior | A double reproduces all real behavior or a real dependency proves production parity |
+| Deterministic time | Injected clocks, frozen time, timers, schedules, and repeated execution | Time-dependent branching is controlled for the tested cases | A frozen clock proves race freedom or correctness under real scheduling |
+| Deterministic randomness | Seeds, generator injection, generated values, shrinking artifacts, and rerun commands | Random inputs are reproducible at the recorded seed and scope | One reproducible seed covers the input space or eliminates nondeterminism |
+| Parallelism | Worker configuration, partitioning, ports, accounts, queues, cleanup, and concurrent run records | The suite executes independently under the evidenced worker and resource configuration | A passing parallel run proves unlimited concurrency or absence of shared-state leakage |
+| Retry policy | Failure classification, retry bounds, preserved artifacts, quarantine records, and repeated outcomes | Only the named infrastructure failures receive bounded retry while product failures remain visible | A passing retry proves the flaky-test cause is fixed or the first failure was harmless |
+| Release policy | Required suites, exceptions, quarantine rules, ownership, gate configuration, and decision records | The configured release gate applies the evidenced pass, fail, and exception rules | Gate configuration proves a release was blocked, approved, improved, or incident-free |
 
 ## Failure Modes and Risks
 
@@ -129,4 +131,4 @@
 - Separate test author, product-code author, defect reporter, reviewer, CI operator, and release decision-maker in every evidence chain.
 - Preserve unknown environments, missing defect links, unmeasured rates, and unsupported outcomes as explicit limitations.
 - Never convert a test refactor, added suite, or green CI run into a prevention or business-impact claim without cited records.
-- Route unresolved material gaps through the main consolidated confirmation process; this guide does not add confirmation rounds.
+- Route material gaps through the main consolidated confirmation process; this guide does not add confirmation rounds or request Git identity for a named-feature route.

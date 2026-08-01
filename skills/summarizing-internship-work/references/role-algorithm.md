@@ -41,16 +41,18 @@
 
 ## Technical Decision Matrix
 
-- Target or label definition: inspect outcome timing, annotation policy, exclusions, and provenance; state the supported target rather than assuming labels are correct.
-- Split strategy: inspect temporal, group, random, or cross-validation split code and justify isolation from future information or correlated entities.
-- baseline: compare the candidate against the named heuristic, prior model, or simple method on the same scoped data and metric.
-- Metric choice: connect the metric to the stated objective, class distribution, ranking position, calibration need, error cost, and evaluation population.
-- Threshold or policy: inspect the decision threshold, abstention rule, and error trade-off; do not equate a score with a product decision without integration evidence.
-- Model complexity: compare capacity, explainability, training cost, latency, and available validation evidence instead of treating a larger model as an improvement.
-- Robustness: inspect perturbation tests, rare slices, missing inputs, adversarial or edge conditions, and the documented behavior when assumptions fail.
-- Reproducibility: retain data version, code revision, seed, environment, dependency versions, configuration, and the recorded rerun scope.
-- Online experiment: select assignment, guardrails, duration, stopping rule, and interpretation boundaries before attributing an observed product effect.
-- inference budget: define latency, memory, compute, batch size, timeout, availability, and fallback constraints from serving requirements or measured artifacts.
+| Decision | Evidence to inspect | Supported claim | Prohibited inference |
+|---|---|---|---|
+| Target or label definition | Outcome timing, annotation policy, exclusions, joins, provenance, and label audits | The evaluated target and labels follow the evidenced definition and data boundary | A label file proves correctness, representativeness, or ownership of annotation operations |
+| Split strategy | Temporal, group, random, or cross-validation split code, entity overlap checks, and fold records | The recorded evaluation isolates future information or correlated entities as demonstrated | One clean split proves generalization, production behavior, or absence of all leakage |
+| baseline | Named heuristic or prior model, scoped data, metric implementation, threshold, and comparison report | The candidate was compared with the named baseline under the recorded protocol | A better offline value proves novelty, online lift, or selection for production |
+| Metric choice | Objective, class distribution, ranking position, calibration need, error cost, population, and metric code | The named metric measures the evidenced aspect of the stated objective | One metric proves broad quality, fairness, business value, or causal benefit |
+| Threshold or policy | Score calibration, threshold code, abstention rule, error trade-off, integration path, and tests | The evidenced threshold or policy maps scores to the named decision boundary | A model score alone proves the downstream product decision or user outcome |
+| Model complexity | Candidate definitions, capacity, explainability, training cost, latency, ablations, and validation reports | The selected complexity reflects the recorded trade-offs and evaluation scope | A larger or newer model is inherently better, novel, or production-ready |
+| Robustness | Perturbation tests, rare slices, missing-input paths, adversarial cases, and fallback behavior | The method has the demonstrated behavior under the tested edge conditions | Selected robustness checks prove universal safety or out-of-distribution reliability |
+| Reproducibility | Data version, code revision, seed, environment, dependency versions, configuration, and rerun record | The recorded run can be reproduced within the evidenced artifacts and environment | Captured configuration proves deterministic results across hardware and every rerun |
+| Online experiment | Assignment, exposure, population, guardrails, duration, stopping rule, outcome, and decision record | The cited experiment supports only the recorded effect and interpretation boundary | Experiment code or configuration proves execution, causal lift, rollout, or lasting impact |
+| inference budget | Latency, memory, compute, batch size, timeout, availability, fallback requirements, and measurements | The named model meets or breaches the evidenced serving constraints in the measured scope | Serving code proves production scale, availability, cost savings, or safe fallback behavior |
 
 ## Failure Modes and Risks
 

@@ -651,8 +651,6 @@ Expected: all 43 existing tests plus the new contract tests pass; `compileall` a
 
 Then verify directly:
 
-Verify directly:
-
 ```text
 git diff --stat 857530b..HEAD
 git diff --check 857530b..HEAD

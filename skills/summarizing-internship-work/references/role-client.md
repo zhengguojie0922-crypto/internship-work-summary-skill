@@ -43,16 +43,18 @@
 
 ## Technical Decision Matrix
 
-- State ownership: compare screen-local state, feature store, and shared repository ownership against restoration and sharing needs.
-- Lifecycle transition handling: retain durable work across recreation, cancel ephemeral work on teardown, and restore only supported state.
-- Cache source of truth: distinguish server-authoritative data, durable local state, and a disposable in-memory view cache.
-- Offline conflict strategy: choose last-write, merge, server-authoritative, or explicit user resolution only when the code or design records it.
-- weak-network retry: prefer bounded, classified retry with cancellation and user feedback over blind immediate looping.
-- thread confinement: keep UI state changes on the required UI executor and move blocking IO or decoding off the main thread.
-- Resource cleanup: release subscriptions, listeners, streams, handles, and background work at the owning lifecycle boundary.
-- Platform abstraction: place a stable feature interface above platform adapters while preserving platform-specific permission and lifecycle semantics.
-- Navigation restoration: persist only identifiers or safe state, then revalidate authorization and current data after a restore.
-- Telemetry design: distinguish instrumentation emitted by the client from evidence that a dashboard, alert, or metric was used.
+| Decision | Evidence to inspect | Supported claim | Prohibited inference |
+|---|---|---|---|
+| State ownership | Screen-local state, feature stores, shared repositories, restoration paths, and sharing tests | The named layer owns the demonstrated state scope and restoration behavior | The contributor designed the whole client architecture or every screen uses the same ownership model |
+| Lifecycle transition handling | Foreground, background, recreation, suspension, teardown callbacks, cancellation hooks, and lifecycle tests | Durable work survives and ephemeral work stops at the evidenced transitions | All operating systems and lifecycle sequences are handled correctly in production |
+| Cache source of truth | Repository interfaces, local schemas, server responses, invalidation code, and cache tests | The evidenced source is authoritative while named caches are disposable or durable as implemented | Cache presence proves freshness, offline reliability, or server ownership |
+| Offline conflict strategy | Replay code, conflict responses, merge rules, persisted queue state, and conflict tests | The implementation uses the recorded last-write, merge, server-authoritative, or user-resolution policy | The policy prevents every duplicate, data-loss case, or cross-device conflict |
+| weak-network retry | Error classification, retry bounds, backoff, cancellation, user feedback, and network-condition tests | The named failures receive bounded retry or terminal handling under tested conditions | Retry code proves successful recovery, continuous connectivity, or production reliability |
+| thread confinement | Executor annotations, dispatch points, UI mutation sites, blocking work, and concurrency tests | UI state and blocking work stay on the evidenced executors | Async syntax alone proves responsiveness, race freedom, or safe teardown |
+| Resource cleanup | Subscription ownership, listener removal, handle closure, background cancellation, and pressure tests | The named resources are released at the demonstrated lifecycle boundary | Cleanup code proves no leaks, low memory use, or battery improvement across devices |
+| Platform abstraction | Shared interfaces, native adapters, permission and lifecycle branches, and platform tests | A stable feature contract delegates the evidenced platform-specific behavior | One adapter proves parity, portability, or ownership of every supported platform |
+| Navigation restoration | Persisted identifiers, state decoding, authorization revalidation, current-data reload, and restore tests | The named route restores only the state and guards demonstrated by evidence | A registered route proves safe restoration for stale sessions or every deep link |
+| Telemetry design | Event definitions, emission sites, consent guards, tests, dashboards, and alert records | The client emits the named instrumentation under the evidenced conditions | Event code proves collection, monitoring, metric movement, or product impact |
 
 ## Failure Modes and Risks
 
@@ -130,4 +132,4 @@
 - A release artifact does not prove store approval, rollout completion, adoption, or incident-free behavior.
 - Separate client, API, backend, platform, test, review, and release authorship in every evidence chain.
 - Preserve unknown platform behavior, unsupported devices, and missing metrics as explicit limitations.
-- Route unresolved material gaps through the main consolidated confirmation process; this guide does not add confirmation rounds.
+- Route material gaps through the main consolidated confirmation process; this guide does not add confirmation rounds or request Git identity for a named-feature route.
