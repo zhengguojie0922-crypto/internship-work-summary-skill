@@ -1,0 +1,13 @@
+/.superpowers/
+/.worktrees/
+/.tmp-*/
+__pycache__/
+*.py[cod]
+/.env*
+/.venv/
+/.coverage
+/htmlcov/
+/.idea/
+/.vscode/
+/dist/
+/build/

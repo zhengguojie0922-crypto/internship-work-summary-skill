@@ -1,0 +1,6 @@
+interface:
+  display_name: "Internship Work Summary"
+  short_description: "从本地代码库证据总结可核验的实习产出、简历和面试材料。"
+  default_prompt: "使用 $summarizing-internship-work 基于本地代码库和 Git 证据生成可核验的实习产出、简历与面试准备文档。"
+policy:
+  allow_implicit_invocation: true
