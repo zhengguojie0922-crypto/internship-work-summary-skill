@@ -40,7 +40,7 @@
 - Consumes: the existing target-role classification and two-route workflow.
 - Produces: a shared analysis reference with label `role analysis framework` and target `references/role-analysis-framework.md`, plus a loading rule of one primary and at most one secondary guide.
 
-- [ ] **Step 1: Write failing routing and framework tests**
+- [x] **Step 1: Write failing routing and framework tests**
 
 Add this path beside the existing path constants:
 
@@ -111,7 +111,7 @@ def test_role_classification_selects_one_primary_and_at_most_one_secondary(self)
     self.assertIn("target role remains the organizing perspective", text)
 ```
 
-- [ ] **Step 2: Run the focused tests and verify RED**
+- [x] **Step 2: Run the focused tests and verify RED**
 
 Run:
 
@@ -121,7 +121,7 @@ python -m unittest tests.test_skill_contract.SkillContractTests.test_skill_loads
 
 Expected: FAIL because the shared framework file and new loading phrases do not exist.
 
-- [ ] **Step 3: Create the shared role-analysis framework**
+- [x] **Step 3: Create the shared role-analysis framework**
 
 Create `role-analysis-framework.md` with these exact sections and rules:
 
@@ -178,7 +178,7 @@ Load exactly one primary role guide. Load at most one secondary role guide only 
 When a chain breaks, stop at the last supported node and record the missing relationship, confidence impact, and possible verification source. When decision authorship is unavailable, describe implementation or participation rather than leadership. When runtime metrics are absent, report capability and validation evidence without claiming production impact.
 ```
 
-- [ ] **Step 4: Update `SKILL.md` loading instructions**
+- [x] **Step 4: Update `SKILL.md` loading instructions**
 
 In `## Supporting Analysis References`, replace the role-classification sentence with the paragraph below, followed by the existing role table. The backslashes before link parentheses exist only to keep this plan's public-link validator from resolving future SKILL-relative links against `docs/superpowers/plans`; omit those backslashes in `SKILL.md`.
 
@@ -186,7 +186,7 @@ In `## Supporting Analysis References`, replace the role-classification sentence
 Use [role classification]\(references/role-classification.md) to select exactly one primary role guide. After classification, always use the [role analysis framework]\(references/role-analysis-framework.md) and the one primary role guide. Load at most one secondary role guide only when direct cross-role evidence is required to explain a dependency, interface, or collaboration boundary; keep the target role as the organizing perspective.
 ```
 
-- [ ] **Step 5: Tighten role classification**
+- [x] **Step 5: Tighten role classification**
 
 Replace the opening paragraph of `role-classification.md` with:
 
@@ -200,7 +200,7 @@ Replace its final paragraph with:
 Load the shared `role-analysis-framework.md` and exactly one primary role guide. Load at most one secondary role guide when direct cross-role evidence meets the boundary above. Use the primary role to order career material and the secondary role only to frame collaboration or breadth. For a target role outside the seven supported categories, choose the closest primary guide and state the mapping reason and unsupported boundary in the final document.
 ```
 
-- [ ] **Step 6: Run focused and module tests**
+- [x] **Step 6: Run focused and module tests**
 
 Run:
 
@@ -210,7 +210,7 @@ python -m unittest tests.test_skill_contract -v
 
 Expected: all `SkillContractTests` pass.
 
-- [ ] **Step 7: Commit the shared framework**
+- [x] **Step 7: Commit the shared framework**
 
 ```text
 git add tests/test_skill_contract.py skills/summarizing-internship-work/SKILL.md skills/summarizing-internship-work/references/role-classification.md skills/summarizing-internship-work/references/role-analysis-framework.md
@@ -228,7 +228,7 @@ git commit -m "Add shared role analysis framework"
 - Consumes: the ten-part analysis contract from Task 1.
 - Produces: detailed frontend and backend guides using the exact required headings and distinct evidence markers.
 
-- [ ] **Step 1: Add the reusable guide assertion and failing tests**
+- [x] **Step 1: Add the reusable guide assertion and failing tests**
 
 Add these constants near the other test constants:
 
@@ -313,7 +313,7 @@ def test_backend_guide_has_role_specific_depth(self) -> None:
     )
 ```
 
-- [ ] **Step 2: Run the new tests and verify RED**
+- [x] **Step 2: Run the new tests and verify RED**
 
 Run:
 
@@ -323,7 +323,7 @@ python -m unittest tests.test_skill_contract.SkillContractTests.test_frontend_gu
 
 Expected: both tests FAIL because the existing five-section guides lack the ten-section contract and required markers.
 
-- [ ] **Step 3: Replace `role-frontend.md` with a detailed guide**
+- [x] **Step 3: Replace `role-frontend.md` with a detailed guide**
 
 Use all ten exact headings. Include these required contents:
 
@@ -342,7 +342,7 @@ Use all ten exact headings. Include these required contents:
 
 Retain the exact sentence: `Route material gaps through the main consolidated confirmation process; this guide does not add confirmation rounds or request Git identity for a named-feature route.`
 
-- [ ] **Step 4: Replace `role-backend.md` with a detailed guide**
+- [x] **Step 4: Replace `role-backend.md` with a detailed guide**
 
 Use all ten exact headings. Include these required contents:
 
@@ -361,7 +361,7 @@ Use all ten exact headings. Include these required contents:
 
 Retain the same consolidated-confirmation sentence required for frontend.
 
-- [ ] **Step 5: Run focused and module tests**
+- [x] **Step 5: Run focused and module tests**
 
 Run:
 
@@ -372,7 +372,7 @@ python -m unittest tests.test_skill_contract -v
 
 Expected: all selected and module tests pass.
 
-- [ ] **Step 6: Commit frontend and backend guidance**
+- [x] **Step 6: Commit frontend and backend guidance**
 
 ```text
 git add tests/test_skill_contract.py skills/summarizing-internship-work/references/role-frontend.md skills/summarizing-internship-work/references/role-backend.md
@@ -390,7 +390,7 @@ git commit -m "Deepen frontend and backend role guidance"
 - Consumes: the shared framework and `_assert_deep_role_guide` helper.
 - Produces: detailed client and testing guides with distinct platform and quality-engineering evidence.
 
-- [ ] **Step 1: Write failing client and testing tests**
+- [x] **Step 1: Write failing client and testing tests**
 
 Add:
 
@@ -422,11 +422,11 @@ def test_testing_guide_has_role_specific_depth(self) -> None:
     )
 ```
 
-- [ ] **Step 2: Run the tests and verify RED**
+- [x] **Step 2: Run the tests and verify RED**
 
 Run the two fully qualified tests above. Expected: both FAIL on missing headings and markers.
 
-- [ ] **Step 3: Expand the client guide**
+- [x] **Step 3: Expand the client guide**
 
 Use the ten exact headings and cover:
 
@@ -442,7 +442,7 @@ Use the ten exact headings and cover:
 
 Retain the consolidated-confirmation sentence.
 
-- [ ] **Step 4: Expand the testing guide**
+- [x] **Step 4: Expand the testing guide**
 
 Use the ten exact headings and cover:
 
@@ -458,7 +458,7 @@ Use the ten exact headings and cover:
 
 Retain the consolidated-confirmation sentence.
 
-- [ ] **Step 5: Run tests and commit**
+- [x] **Step 5: Run tests and commit**
 
 Run the two focused tests and `python -m unittest tests.test_skill_contract -v`. Expected: PASS.
 
@@ -478,7 +478,7 @@ git commit -m "Deepen client and testing role guidance"
 - Consumes: the shared framework and deep-guide assertion helper.
 - Produces: detailed delivery/operations and analytics guides.
 
-- [ ] **Step 1: Write failing DevOps and data-analytics tests**
+- [x] **Step 1: Write failing DevOps and data-analytics tests**
 
 Add:
 
@@ -510,11 +510,11 @@ def test_data_analytics_guide_has_role_specific_depth(self) -> None:
     )
 ```
 
-- [ ] **Step 2: Run the tests and verify RED**
+- [x] **Step 2: Run the tests and verify RED**
 
 Run the two fully qualified tests. Expected: FAIL on missing headings and markers.
 
-- [ ] **Step 3: Expand the DevOps guide**
+- [x] **Step 3: Expand the DevOps guide**
 
 Use the ten exact headings and cover:
 
@@ -529,7 +529,7 @@ Use the ten exact headings and cover:
 
 Retain the consolidated-confirmation sentence.
 
-- [ ] **Step 4: Expand the data-analytics guide**
+- [x] **Step 4: Expand the data-analytics guide**
 
 Use the ten exact headings and cover:
 
@@ -544,7 +544,7 @@ Use the ten exact headings and cover:
 
 Retain the consolidated-confirmation sentence.
 
-- [ ] **Step 5: Run tests and commit**
+- [x] **Step 5: Run tests and commit**
 
 Run the two focused tests and the complete skill-contract module. Expected: PASS.
 
@@ -564,7 +564,7 @@ git commit -m "Deepen DevOps and analytics role guidance"
 - Consumes: the shared framework and six completed role guides.
 - Produces: the seventh detailed guide and a complete seven-guide structural/uniqueness contract.
 
-- [ ] **Step 1: Write failing algorithm and complete-system tests**
+- [x] **Step 1: Write failing algorithm and complete-system tests**
 
 Add:
 
@@ -598,11 +598,11 @@ def test_exactly_seven_distinct_deep_role_guides_exist(self) -> None:
     self.assertEqual(len(bodies), len(set(bodies)))
 ```
 
-- [ ] **Step 2: Run the tests and verify RED**
+- [x] **Step 2: Run the tests and verify RED**
 
 Run the two new tests. Expected: the algorithm-depth test FAILS; the seven-guide structure test also FAILS until the algorithm guide is expanded.
 
-- [ ] **Step 3: Expand the algorithm guide**
+- [x] **Step 3: Expand the algorithm guide**
 
 Use the ten exact headings and cover:
 
@@ -617,7 +617,7 @@ Use the ten exact headings and cover:
 
 Retain the consolidated-confirmation sentence.
 
-- [ ] **Step 4: Run focused and module verification**
+- [x] **Step 4: Run focused and module verification**
 
 Run:
 
@@ -627,14 +627,14 @@ python -m unittest tests.test_skill_contract -v
 
 Expected: all `SkillContractTests` pass.
 
-- [ ] **Step 5: Commit the completed role system**
+- [x] **Step 5: Commit the completed role system**
 
 ```text
 git add tests/test_skill_contract.py skills/summarizing-internship-work/references/role-algorithm.md
 git commit -m "Deepen algorithm role guidance"
 ```
 
-- [ ] **Step 6: Run complete deterministic verification and review the final diff**
+- [x] **Step 6: Run complete deterministic verification and review the final diff**
 
 Run:
 
