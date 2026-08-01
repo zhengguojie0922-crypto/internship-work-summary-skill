@@ -333,6 +333,34 @@ class SkillContractTests(unittest.TestCase):
             text,
         )
 
+    def test_algorithm_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-algorithm.md",
+            (
+                "label leakage",
+                "baseline",
+                "offline evaluation",
+                "online experiment",
+                "model drift",
+                "inference budget",
+            ),
+        )
+
+    def test_exactly_seven_distinct_deep_role_guides_exist(self) -> None:
+        role_guides = sorted(
+            path
+            for path in (SKILL_DIR / "references").glob("role-*.md")
+            if path.name not in {"role-analysis-framework.md", "role-classification.md"}
+        )
+        self.assertEqual(7, len(role_guides))
+        bodies = []
+        for guide in role_guides:
+            text = guide.read_text(encoding="utf-8")
+            for heading in ROLE_REQUIRED_HEADINGS:
+                self.assertIn(heading, text, guide.name)
+            bodies.append(text)
+        self.assertEqual(len(bodies), len(set(bodies)))
+
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
         text = (SKILL_DIR / "references" / "role-classification.md").read_text(encoding="utf-8")
         self.assertIn("main consolidated confirmation process", text)
