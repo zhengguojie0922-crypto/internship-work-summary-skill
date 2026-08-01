@@ -38,7 +38,7 @@
 
 **Interfaces:**
 - Consumes: the existing target-role classification and two-route workflow.
-- Produces: a shared analysis reference linked as `[role analysis framework](references/role-analysis-framework.md)` and a loading rule of one primary plus at most one secondary guide.
+- Produces: a shared analysis reference with label `role analysis framework` and target `references/role-analysis-framework.md`, plus a loading rule of one primary and at most one secondary guide.
 
 - [ ] **Step 1: Write failing routing and framework tests**
 
@@ -51,7 +51,7 @@ ROLE_FRAMEWORK_PATH = SKILL_DIR / "references" / "role-analysis-framework.md"
 Add this link to `REQUIRED_REFERENCE_LINKS` immediately after role classification:
 
 ```python
-"[role analysis framework](references/role-analysis-framework.md)",
+"[role analysis framework]" "(references/role-analysis-framework.md)",
 ```
 
 Change the existing role-guide glob filter so the new framework is not counted as an eighth role:
@@ -180,10 +180,10 @@ When a chain breaks, stop at the last supported node and record the missing rela
 
 - [ ] **Step 4: Update `SKILL.md` loading instructions**
 
-In `## Supporting Analysis References`, replace the role-classification sentence with this exact paragraph, followed by the existing role table:
+In `## Supporting Analysis References`, replace the role-classification sentence with the paragraph below, followed by the existing role table. The backslashes before link parentheses exist only to keep this plan's public-link validator from resolving future SKILL-relative links against `docs/superpowers/plans`; omit those backslashes in `SKILL.md`.
 
 ```markdown
-Use [role classification](references/role-classification.md) to select exactly one primary role guide. After classification, always use the [role analysis framework](references/role-analysis-framework.md) and the one primary role guide. Load at most one secondary role guide only when direct cross-role evidence is required to explain a dependency, interface, or collaboration boundary; keep the target role as the organizing perspective.
+Use [role classification]\(references/role-classification.md) to select exactly one primary role guide. After classification, always use the [role analysis framework]\(references/role-analysis-framework.md) and the one primary role guide. Load at most one secondary role guide only when direct cross-role evidence is required to explain a dependency, interface, or collaboration boundary; keep the target role as the organizing perspective.
 ```
 
 - [ ] **Step 5: Tighten role classification**
