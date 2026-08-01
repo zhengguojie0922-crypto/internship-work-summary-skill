@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILL_DIR = ROOT / "skills" / "summarizing-internship-work"
 SKILL_PATH = SKILL_DIR / "SKILL.md"
 METADATA_PATH = SKILL_DIR / "agents" / "openai.yaml"
+ROLE_FRAMEWORK_PATH = SKILL_DIR / "references" / "role-analysis-framework.md"
 
 TRIGGERS = (
     "实习产出",
@@ -46,6 +47,7 @@ REQUIRED_REFERENCE_LINKS = (
     "[analysis defaults](references/analysis-defaults.md)",
     "[achievement analysis](references/achievement-analysis.md)",
     "[role classification](references/role-classification.md)",
+    "[role analysis framework](references/role-analysis-framework.md)",
     "[frontend guide](references/role-frontend.md)",
     "[backend guide](references/role-backend.md)",
     "[client guide](references/role-client.md)",
@@ -163,7 +165,8 @@ class SkillContractTests(unittest.TestCase):
         role_guides = sorted(
             path
             for path in (SKILL_DIR / "references").glob("role-*.md")
-            if path.name != "role-classification.md"
+            if path.name
+            not in {"role-analysis-framework.md", "role-classification.md"}
         )
         self.assertEqual(7, len(role_guides))
         for guide in role_guides:
@@ -179,6 +182,53 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("main consolidated confirmation process", text)
         self.assertIn("does not add confirmation rounds", text)
         self.assertNotRegex(text, r"(?im)^Ask\\b")
+
+    def test_skill_loads_shared_role_framework_and_bounds_cross_role_context(self) -> None:
+        section = self._section("Supporting Analysis References")
+        for phrase in (
+            "role analysis framework",
+            "one primary role guide",
+            "at most one secondary role guide",
+            "direct cross-role evidence",
+        ):
+            self.assertIn(phrase, section)
+
+    def test_role_analysis_framework_maps_evidence_to_career_material(self) -> None:
+        text = ROLE_FRAMEWORK_PATH.read_text(encoding="utf-8")
+        for heading in (
+            "## Evidence Chain",
+            "## Decision Reconstruction",
+            "## Technical Depth",
+            "## Evidence Classification",
+            "## Career Material Mapping",
+            "## Interview Question Tree",
+            "## Cross-Role Boundary",
+            "## Degradation Rules",
+        ):
+            self.assertIn(heading, text)
+        lowered = text.lower()
+        for phrase in (
+            "entry point",
+            "alternative",
+            "failure mode",
+            "validation evidence",
+            "basic implementation",
+            "system-level improvement",
+            "resume",
+            "scenario",
+            "one secondary role guide",
+            "last supported node",
+        ):
+            self.assertIn(phrase, lowered)
+
+    def test_role_classification_selects_one_primary_and_at_most_one_secondary(self) -> None:
+        text = (SKILL_DIR / "references" / "role-classification.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("exactly one primary role guide", text)
+        self.assertIn("at most one secondary role guide", text)
+        self.assertIn("direct cross-role evidence", text)
+        self.assertIn("target role remains the organizing perspective", text)
 
     def test_output_is_the_single_explicit_workspace_write(self) -> None:
         for phrase in (

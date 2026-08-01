@@ -45,7 +45,7 @@ Filter candidate commits to the resolved Git identity before clustering; only ma
 
 ## Supporting Analysis References
 
-Use [analysis defaults](references/analysis-defaults.md) for read-only commands, skip rules, limits, and degradation behavior. Use [achievement analysis](references/achievement-analysis.md) to turn the supported evidence into major outputs. Use [role classification](references/role-classification.md) to select the applicable role guide:
+Use [analysis defaults](references/analysis-defaults.md) for read-only commands, skip rules, limits, and degradation behavior. Use [achievement analysis](references/achievement-analysis.md) to turn the supported evidence into major outputs. Use [role classification](references/role-classification.md) to select exactly one primary role guide. After classification, always use the [role analysis framework](references/role-analysis-framework.md) and the one primary role guide. Load at most one secondary role guide only when direct cross-role evidence is required to explain a dependency, interface, or collaboration boundary; keep the target role as the organizing perspective.
 
 | Role | Guide |
 |---|---|
