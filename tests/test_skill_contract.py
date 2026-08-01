@@ -13,6 +13,19 @@ SKILL_PATH = SKILL_DIR / "SKILL.md"
 METADATA_PATH = SKILL_DIR / "agents" / "openai.yaml"
 ROLE_FRAMEWORK_PATH = SKILL_DIR / "references" / "role-analysis-framework.md"
 
+ROLE_REQUIRED_HEADINGS = (
+    "## Role Boundary and Subdomains",
+    "## Entry-Point Discovery",
+    "## Typical Code Chains",
+    "## Technical Decision Matrix",
+    "## Failure Modes and Risks",
+    "## Validation Evidence",
+    "## Impact and Metrics Evidence",
+    "## Resume Mapping",
+    "## Interview Question Tree",
+    "## Overclaim Guardrails",
+)
+
 TRIGGERS = (
     "实习产出",
     "实习总结",
@@ -161,21 +174,59 @@ class SkillContractTests(unittest.TestCase):
         ):
             self.assertIn(phrase, output_section)
 
-    def test_role_guides_supply_topics_without_extra_question_gates(self) -> None:
+    def test_role_guides_do_not_add_question_gates(self) -> None:
         role_guides = sorted(
             path
             for path in (SKILL_DIR / "references").glob("role-*.md")
-            if path.name
-            not in {"role-analysis-framework.md", "role-classification.md"}
+            if path.name not in {"role-analysis-framework.md", "role-classification.md"}
         )
         self.assertEqual(7, len(role_guides))
         for guide in role_guides:
             text = guide.read_text(encoding="utf-8")
-            self.assertIn("Evidence Topics", text, guide.name)
             self.assertIn("main consolidated confirmation process", text, guide.name)
             self.assertIn("does not add confirmation rounds", text, guide.name)
-            self.assertNotRegex(text, r"(?im)^Ask\\b", guide.name)
+            self.assertNotRegex(text, r"(?im)^Ask\b", guide.name)
             self.assertNotRegex(text, r"(?i)ask[^.]*Git identity", guide.name)
+
+    def _assert_deep_role_guide(self, filename: str, markers: tuple[str, ...]) -> None:
+        text = (SKILL_DIR / "references" / filename).read_text(encoding="utf-8")
+        line_count = len(text.splitlines())
+        self.assertGreaterEqual(line_count, 120, filename)
+        self.assertLessEqual(line_count, 180, filename)
+        for heading in ROLE_REQUIRED_HEADINGS:
+            self.assertIn(heading, text, filename)
+        for marker in markers:
+            self.assertIn(marker, text, filename)
+        self.assertIn("main consolidated confirmation process", text, filename)
+        self.assertIn("does not add confirmation rounds", text, filename)
+        self.assertNotRegex(text, r"(?im)^Ask\b", filename)
+        self.assertNotRegex(text, r"(?i)ask[^.]*Git identity", filename)
+
+    def test_frontend_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-frontend.md",
+            (
+                "request race",
+                "rendering boundary",
+                "accessibility tree",
+                "Core Web Vitals",
+                "design-system",
+                "end-to-end user flow",
+            ),
+        )
+
+    def test_backend_guide_has_role_specific_depth(self) -> None:
+        self._assert_deep_role_guide(
+            "role-backend.md",
+            (
+                "idempotency",
+                "transaction boundary",
+                "cache invalidation",
+                "message delivery",
+                "authorization policy",
+                "observability",
+            ),
+        )
 
     def test_role_classification_uses_the_main_confirmation_process(self) -> None:
         text = (SKILL_DIR / "references" / "role-classification.md").read_text(encoding="utf-8")
