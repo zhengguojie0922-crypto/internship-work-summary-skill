@@ -101,7 +101,7 @@ class GitRunner:
 
     def _command(self, *arguments: str) -> list[str]:
         # A unique, never-created path disables repository hooks without mutating either workspace.
-        disabled_hooks = Path(tempfile.gettempdir()) / f".codebase-work-impact-disabled-hooks-{os.getpid()}-{id(self)}"
+        disabled_hooks = Path(tempfile.gettempdir()) / f".internship-work-summary-disabled-hooks-{os.getpid()}-{id(self)}"
         return [
             "git",
             "--no-pager",
@@ -257,6 +257,7 @@ def _parser() -> argparse.ArgumentParser:
         subparser.add_argument("--repo", required=True, type=Path)
         subparser.add_argument("--since", type=_parse_date)
         subparser.add_argument("--until", type=_parse_date)
+        subparser.add_argument("--max-commits", type=_positive_integer, default=500)
         subparser.add_argument("--output", default="-")
         subparser.add_argument("--pretty", action="store_true")
 
@@ -267,7 +268,6 @@ def _parser() -> argparse.ArgumentParser:
     common(collect)
     collect.add_argument("--author", action="append", default=[])
     collect.add_argument("--path", action="append", default=[], type=_repo_path)
-    collect.add_argument("--max-commits", type=_positive_integer, default=500)
     collect.add_argument("--include-merges", action="store_true")
     collect.add_argument("--sensitivity", choices=("internal", "public"), default="internal")
     return parser
@@ -376,11 +376,29 @@ def _has_head(git: GitRunner) -> bool:
     return git.run("rev-parse", "--verify", "HEAD", allow_failure=True).returncode == 0
 
 
-def _parse_history(git: GitRunner) -> list[dict[str, Any]]:
+def _parse_history(
+    git: GitRunner,
+    *,
+    since: datetime | None,
+    until: datetime | None,
+    max_commits: int,
+    include_merges: bool,
+    paths: list[str],
+) -> tuple[list[dict[str, Any]], bool]:
     if not _has_head(git):
-        return []
+        return [], False
     fields = "%H%x1f%P%x1f%an%x1f%ae%x1f%cn%x1f%ce%x1f%aI%x1f%cI%x1f%B%x1e"
-    output = git.run("log", f"--format={fields}", "HEAD").stdout
+    arguments = ["log", "--no-ext-diff", "--no-textconv", f"--format={fields}"]
+    if since is not None:
+        arguments.append(f"--since={_format_time(since)}")
+    if until is not None:
+        arguments.append(f"--before={_format_time(until)}")
+    if not include_merges:
+        arguments.append("--no-merges")
+    arguments.extend((f"--max-count={max_commits + 1}", "HEAD"))
+    if paths:
+        arguments.extend(("--", *paths))
+    output = git.run(*arguments).stdout
     commits: list[dict[str, Any]] = []
     for raw_record in output.split("\x1e"):
         record = raw_record.strip("\r\n")
@@ -403,7 +421,8 @@ def _parse_history(git: GitRunner) -> list[dict[str, Any]]:
                 "message": message.rstrip("\r\n"),
             }
         )
-    return commits
+    reached_limit = len(commits) > max_commits
+    return commits[:max_commits], reached_limit
 
 
 def _matches_date(commit: dict[str, Any], since: datetime | None, until: datetime | None) -> bool:
@@ -414,12 +433,15 @@ def _matches_date(commit: dict[str, Any], since: datetime | None, until: datetim
 def _matches_author(commit: dict[str, Any], authors: list[str]) -> bool:
     if not authors:
         return True
-    observed = (commit["author_name"].casefold(), commit["author_email"].casefold())
-    return any(
-        value.casefold() in candidate
-        for value in authors
-        for candidate in observed
-    )
+    requested = {" ".join(value.split()).casefold() for value in authors}
+    observed = {
+        " ".join(commit["author_name"].split()).casefold(),
+        _normalize_email(commit["author_email"]),
+    }
+    for match in COAUTHOR_RE.finditer(commit["message"]):
+        observed.add(" ".join(match.group("name").split()).casefold())
+        observed.add(_normalize_email(match.group("email")))
+    return bool(requested & observed)
 
 
 def _parse_name_status(output: str) -> list[dict[str, Any]]:
@@ -681,7 +703,7 @@ def _scope(arguments: argparse.Namespace) -> tuple[dict[str, Any], list[dict[str
         "until": _format_time(arguments.until),
         "authors": [],
         "paths": [],
-        "max_commits": 500,
+        "max_commits": arguments.max_commits,
         "include_merges": False,
         "sensitivity": "internal",
     }
@@ -706,11 +728,25 @@ def _collect(arguments: argparse.Namespace) -> dict[str, Any]:
     root, git = _open_repository(arguments.repo)
     sensitivity = getattr(arguments, "sensitivity", "internal")
     repository, warnings = _repository_metadata(root, git, sensitivity)
-    history = [
-        commit
-        for commit in _parse_history(git)
-        if _matches_date(commit, arguments.since, arguments.until)
-    ]
+    history, reached_limit = _parse_history(
+        git,
+        since=arguments.since,
+        until=arguments.until,
+        max_commits=arguments.max_commits,
+        include_merges=getattr(arguments, "include_merges", True),
+        paths=getattr(arguments, "path", []),
+    )
+    if reached_limit:
+        warnings.append(
+            {
+                "category": "commit_limit_reached",
+                "source_id": "scope",
+                "detail": (
+                    f"history scan limited to {arguments.max_commits} candidate commits; "
+                    "narrow the date/path scope or raise --max-commits"
+                ),
+            }
+        )
 
     if arguments.command == "contributors":
         contributors = _contributors(history, sensitivity)
@@ -719,7 +755,6 @@ def _collect(arguments: argparse.Namespace) -> dict[str, Any]:
         authors = sorted(set(arguments.author), key=str.casefold)
         paths = sorted(set(arguments.path), key=str.casefold)
         selected = []
-        reached_limit = False
         for commit in history:
             if not arguments.include_merges and len(commit["parents"]) > 1:
                 continue
@@ -728,19 +763,8 @@ def _collect(arguments: argparse.Namespace) -> dict[str, Any]:
             files = _commit_files(git, commit)
             if not _matches_paths(files, paths):
                 continue
-            if len(selected) >= arguments.max_commits:
-                reached_limit = True
-                break
             commit["files"] = files
             selected.append(commit)
-        if reached_limit:
-            warnings.append(
-                {
-                    "category": "commit_limit_reached",
-                    "source_id": "scope",
-                    "detail": f"results limited to {arguments.max_commits} commits",
-                }
-            )
         contributors = _contributors(selected, sensitivity)
 
     selected.sort(key=lambda item: (_format_time(datetime.fromisoformat(item["authored_at"].replace("Z", "+00:00"))), item["sha"]))

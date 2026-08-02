@@ -31,6 +31,7 @@ PUBLISHING_FILES = (README, CONTRIBUTING, LICENSE, WORKFLOW, METADATA, VERSION)
 NEW_REPOSITORY = "zhengguojie0922-crypto/internship-work-summary-skill"
 OLD_IDENTITY_PHRASES = (
     "Codebase Work Impact",
+    "codebase-work-impact",
     "codebase-work-impact-skill",
     "analyzing-codebase-work-impact",
     "$analyzing-codebase-work-impact",
@@ -248,22 +249,24 @@ class PublishingSurfaceTests(unittest.TestCase):
         self.assertIn(NEW_REPOSITORY, text)
         self.assertIn("--skill summarizing-internship-work", text)
         self.assertIn("$summarizing-internship-work", text)
-        self.assertIn("1.0.0", text)
+        self.assertIn("1.1.0", text)
         self.assertNotIn("## \u4ece 0.2.x \u5347\u7ea7", text)
         for phrase in OLD_IDENTITY_PHRASES:
             self.assertNotIn(phrase, text)
 
     def test_nonhistorical_product_files_do_not_use_the_retired_identity(self) -> None:
-        active_files = (
+        active_files = {
             README,
             CONTRIBUTING,
             LICENSE,
             WORKFLOW,
-            SKILL_DIR / "SKILL.md",
-            METADATA,
-            VERSION,
-        )
-        for path in active_files:
+            *(
+                path
+                for path in SKILL_DIR.rglob("*")
+                if path.is_file() and "__pycache__" not in path.parts
+            ),
+        }
+        for path in sorted(active_files):
             text = read_utf8(path)
             for phrase in OLD_IDENTITY_PHRASES:
                 self.assertNotIn(phrase, text, path.relative_to(ROOT))
@@ -292,11 +295,21 @@ class PublishingSurfaceTests(unittest.TestCase):
             "混合请求",
             "不询问 Git 身份",
             "同时确认 Git 身份和目标岗位",
-            "先追踪功能，再用 Git 补充个人归属证据",
+            "默认该功能由用户完整实现",
+            "不自动声明个人所有权",
+            "只有用户明确要求 Git 校验时",
+            "完整姓名或完整邮箱精确匹配",
+            "共同作者",
+            "默认选择证据最强的 3 项",
+            "明确要求全面总结时才扩展到最多 5 项",
+            "3-5 个独立场景题",
+            "证据不足时少于 20 个",
+            "保留无关的已验证内容",
+            "明确要求重建",
         ):
             self.assertIn(phrase, text)
 
-    def test_metadata_and_version_are_aligned_with_the_breaking_release(self) -> None:
+    def test_metadata_and_version_are_aligned_with_the_current_release(self) -> None:
         metadata = parse_openai_metadata(read_utf8(METADATA))
         self.assertEqual(
             {
@@ -311,8 +324,8 @@ class PublishingSurfaceTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "quoted string"):
             parse_openai_metadata("interface:\n  display_name: Codebase Work Impact\n")
-        self.assertEqual("1.0.0", read_utf8(VERSION).strip())
-        self.assertIn("1.0.0", read_utf8(README))
+        self.assertEqual("1.1.0", read_utf8(VERSION).strip())
+        self.assertIn("1.1.0", read_utf8(README))
 
     def test_readme_distinguishes_structural_verification_from_model_behavior(self) -> None:
         text = read_utf8(README)
@@ -323,13 +336,12 @@ class PublishingSurfaceTests(unittest.TestCase):
             "git diff --check",
             "结构性测试",
             "模型层行为",
-            "有限的 Codex 前向验收",
-            "Git 身份和目标岗位",
+            "`1.1.0` 未执行独立模型前向验收",
             "不代表 DS、Claude",
             "不代表完整模型矩阵",
         ):
             self.assertIn(phrase, text)
-        self.assertNotIn("该前向验收尚未运行", text)
+        self.assertNotIn("截至 2026-07-31", text)
 
     def test_license_is_exact_mit_text_across_line_endings(self) -> None:
         actual = read_utf8(LICENSE).replace("\r\n", "\n")

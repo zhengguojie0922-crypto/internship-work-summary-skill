@@ -122,6 +122,7 @@ LEGACY_ARTIFACTS = (
     "resume-audit.json",
 )
 REQUIRED_REFERENCE_LINKS = (
+    "[Git evidence collector](scripts/collect_git_evidence.py)",
     "[analysis defaults](references/analysis-defaults.md)",
     "[achievement analysis](references/achievement-analysis.md)",
     "[role classification](references/role-classification.md)",
@@ -241,6 +242,41 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("error handling", feature_section)
         self.assertIn("tests", feature_section)
 
+    def test_named_feature_personal_output_uses_user_provided_attribution(self) -> None:
+        feature_section = self._section("Trace a Named Feature")
+        for phrase in (
+            "personal resume, internship summary, or personal output",
+            "fully implemented by the user",
+            "user-provided evidence",
+            "Do not check commit authorship",
+        ):
+            self.assertIn(phrase, feature_section)
+
+    def test_implementation_only_feature_analysis_does_not_claim_ownership(self) -> None:
+        feature_section = self._section("Trace a Named Feature")
+        self.assertIn("only asks how the feature works", feature_section)
+        self.assertIn("do not infer personal ownership", feature_section)
+
+    def test_git_discovery_uses_the_collector_through_stdout(self) -> None:
+        discovery_section = self._section("Discover Contributions From Git History")
+        for phrase in (
+            "contributors",
+            "collect",
+            "--output -",
+            "consume stdout in memory",
+            "aliases",
+            "Co-authored-by",
+            "repeated --author",
+            "--max-commits 500",
+            "--sensitivity internal",
+            "--sensitivity public",
+            "exit code 2",
+            "exit code 3",
+            "exit code 4",
+            "exit code 5",
+        ):
+            self.assertIn(phrase.casefold(), discovery_section.casefold())
+
     def test_git_discovery_scopes_personal_work_to_resolved_identity(self) -> None:
         discovery_section = self._section("Discover Contributions From Git History")
         self.assertIn(
@@ -265,13 +301,41 @@ class SkillContractTests(unittest.TestCase):
             "reference answer",
             "likely follow-ups",
             "follow-up answer direction",
-            "scenario questions",
+            "separate set of 3-5 scenario questions",
             "scenario response framework",
-            "strongest 3-5",
+            "strongest 3 major outputs by default",
+            "up to 5 only when the user explicitly requests a comprehensive summary",
+            "fewer than 20",
+            "evidence is insufficient",
+            "never pad or fabricate",
             "concise appendix",
             "Evidence Index",
         ):
             self.assertIn(phrase, output_section)
+
+    def test_existing_final_document_is_updated_without_silent_replacement(self) -> None:
+        output_section = self._section("Build the Final Document")
+        for phrase in (
+            "If the final document already exists",
+            "update matching outputs",
+            "preserve unrelated verified material",
+            "Replace the entire document only when the user explicitly requests a rebuild",
+        ):
+            self.assertIn(phrase, output_section)
+
+    def test_interview_reference_separates_core_and_scenario_questions(self) -> None:
+        text = (SKILL_DIR / "references" / "interview-expansion.md").read_text(
+            encoding="utf-8"
+        )
+        for phrase in (
+            "concise reference answer",
+            "likely follow-ups",
+            "separate set of 3-5 scenario questions",
+            "fewer than 20",
+            "evidence is insufficient",
+            "never pad or fabricate",
+        ):
+            self.assertIn(phrase, text)
 
     def test_role_guides_do_not_add_question_gates(self) -> None:
         role_guides = sorted(
@@ -500,6 +564,19 @@ class SkillContractTests(unittest.TestCase):
             "redact secrets",
         ):
             self.assertIn(phrase, safety)
+
+    def test_user_attribution_has_priority_without_expanding_feature_scope(self) -> None:
+        safety = self._section("Evidence and Safety Rules")
+        self.assertIn(
+            "User-provided attribution supports ownership only for the named feature scope",
+            safety,
+        )
+        references = self._section("Supporting Analysis References")
+        self.assertIn(
+            "Role-guide ownership guardrails must accept that user-provided attribution",
+            references,
+        )
+        self.assertIn("adjacent components, team outcomes, or business impact", references)
 
     def test_skill_navigates_directly_to_retained_analysis_and_role_references(self) -> None:
         for link in REQUIRED_REFERENCE_LINKS:

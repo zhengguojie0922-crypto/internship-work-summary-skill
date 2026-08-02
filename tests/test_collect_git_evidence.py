@@ -118,13 +118,33 @@ class CollectGitEvidenceTests(unittest.TestCase):
         self.assertEqual([self.ada_commit], [commit["commit_id"] for commit in document["commits"]])
         self.assertEqual(["ada@corp.example"], document["scope"]["authors"])
 
+    def test_collect_requires_a_complete_author_name_or_email(self) -> None:
+        document = self.document(
+            "collect",
+            "--repo",
+            str(self.repository),
+            "--author",
+            "a",
+        )
+        self.assertEqual([], document["commits"])
+
+    def test_collect_includes_commits_where_identity_is_a_coauthor(self) -> None:
+        document = self.document(
+            "collect",
+            "--repo",
+            str(self.repository),
+            "--author",
+            "  GRACE@CORP.EXAMPLE  ",
+        )
+        self.assertEqual([self.ada_commit], [commit["commit_id"] for commit in document["commits"]])
+
     def test_collect_enforces_the_commit_limit_and_reports_the_boundary(self) -> None:
         document = self.document(
             "collect",
             "--repo",
             str(self.repository),
             "--author",
-            "Ada",
+            "Ada Lovelace",
             "--max-commits",
             "1",
         )
@@ -133,6 +153,60 @@ class CollectGitEvidenceTests(unittest.TestCase):
             "commit_limit_reached",
             [warning["code"] for warning in document["warnings"]],
         )
+
+    def test_contributors_accepts_the_same_bounded_history_limit(self) -> None:
+        document = self.document(
+            "contributors",
+            "--repo",
+            str(self.repository),
+            "--max-commits",
+            "1",
+        )
+        self.assertEqual(1, document["scope"]["max_commits"])
+        self.assertIn(
+            "commit_limit_reached",
+            [warning["code"] for warning in document["warnings"]],
+        )
+
+    def test_history_query_pushes_filters_to_git_and_caps_scanned_records(self) -> None:
+        fields = (
+            "{sha}\x1f\x1fAda Lovelace\x1fada@corp.example\x1f"
+            "Ada Lovelace\x1fada@corp.example\x1f2024-01-01T12:00:00+00:00\x1f"
+            "2024-01-01T12:00:00+00:00\x1fCommit {index}\x1e"
+        )
+
+        class RecordingGit:
+            def __init__(self) -> None:
+                self.log_arguments: tuple[str, ...] | None = None
+
+            def run(self, *arguments: str, allow_failure: bool = False) -> subprocess.CompletedProcess[str]:
+                if arguments[:2] == ("rev-parse", "--verify"):
+                    return subprocess.CompletedProcess(arguments, 0, "head\n", "")
+                self.log_arguments = arguments
+                output = "".join(
+                    fields.format(sha=str(index) * 40, index=index)
+                    for index in range(1, 4)
+                )
+                return subprocess.CompletedProcess(arguments, 0, output, "")
+
+        git = RecordingGit()
+        commits, reached_limit = collector._parse_history(
+            git,
+            since=collector._parse_date("2024-01-01"),
+            until=collector._parse_date("2024-02-01"),
+            max_commits=2,
+            include_merges=False,
+            paths=["src"],
+        )
+
+        self.assertEqual(2, len(commits))
+        self.assertTrue(reached_limit)
+        assert git.log_arguments is not None
+        self.assertIn("--since=2024-01-01T00:00:00Z", git.log_arguments)
+        self.assertIn("--before=2024-02-01T00:00:00Z", git.log_arguments)
+        self.assertIn("--max-count=3", git.log_arguments)
+        self.assertIn("--no-merges", git.log_arguments)
+        self.assertEqual(("--", "src"), git.log_arguments[-2:])
 
     def test_collect_includes_changed_file_evidence(self) -> None:
         document = self.document(
