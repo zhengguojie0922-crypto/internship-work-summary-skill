@@ -78,6 +78,8 @@ If the final document already exists, update matching outputs and preserve unrel
 
 Prioritize the strongest 3 major outputs by default using direct evidence, technical depth, and target-role relevance. Expand to up to 5 only when the user explicitly requests a comprehensive summary. Put lower-value verified work in a concise appendix rather than expanding it as a major output.
 
+Before drafting career material, build an in-memory evidence matrix for each major output using the role analysis framework. Trace business scope, entry points, files and symbols, callers and callees, end-to-end code path, data and state, business rules, failures, configuration, tests, applicable Git evidence, design choices, alternatives, and evidence gaps. Use the matrix to plan distinct questions. Every project-specific question must cite at least one concrete evidence anchor. If candidate questions share substantially the same anchors, central conclusion, and answer path, merge duplicate questions and find a different evidence-backed angle.
+
 Write the document in this order for each major output:
 
 1. `Internship Output Overview`: scope, role, attribution boundary, and evidence confidence.
@@ -86,8 +88,8 @@ Write the document in this order for each major output:
 4. `Personal Work`: attributable actions, collaboration boundary, decisions, technical difficulties, validation, and explicit unknowns.
 5. `Resume Wording`: three role-appropriate variants from [resume writing](references/resume-writing.md).
 6. `Interview Introduction`: `30-second`, `1-minute`, and `3-minute` versions from [interview expansion](references/interview-expansion.md).
-7. `Interview Questions`: about 20 core interview questions per major output, each with a concise reference answer, likely follow-ups, and follow-up answer direction; then add a separate set of 3-5 scenario questions with a scenario response framework. Produce fewer than 20 core questions when evidence is insufficient; never pad or fabricate to meet a quota.
+7. `Interview Questions`: about 20 core interview questions per major output. Every question must be a complete unit containing a `Detailed question`, `Interview intent`, `Code evidence`, `Reasoning process`, `Detailed first-person answer`, `Design trade-offs`, `Failure and validation analysis`, `2-4 deep follow-up questions`, `Complete follow-up answers` for every follow-up, and an `Evidence boundary`. Then add a separate set of 3-5 scenario questions; each scenario states its changed premise, affected code path, diagnosis or decision process, concrete response, trade-offs, validation, and evidence-derived follow-ups with complete answers. Produce fewer than 20 core questions when evidence is insufficient; never pad or fabricate to meet a quota.
 8. `Metrics Needs User Input`: metrics that would strengthen the claim, why they matter, and the owner or system that could verify them.
 9. `Evidence Index`: evidence locations, commit identifiers when used, confidence, attribution, and redactions.
 
-Use the resume and interview references to expand these sections. Keep every factual claim evidence-backed and every stronger unsupported claim in the explicit unknowns or metrics section.
+Use the resume and interview references to expand these sections. Keep every factual claim evidence-backed and every stronger unsupported claim in the explicit unknowns or metrics section. Before the single final write, run a final quality audit in memory: confirm that every core question has all ten elements, every follow-up has a complete answer, evidence anchors are explained rather than merely listed, questions cover distinct technical dimensions, attribution is consistent across resume and interview material, and scenarios distinguish current implementation from proposed action. Return to the evidence matrix and repair any failed item before writing the document.

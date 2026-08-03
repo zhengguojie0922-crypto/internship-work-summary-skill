@@ -298,11 +298,21 @@ class SkillContractTests(unittest.TestCase):
             "1-minute",
             "3-minute",
             "about 20 core interview questions",
-            "reference answer",
-            "likely follow-ups",
-            "follow-up answer direction",
+            "in-memory evidence matrix",
+            "Detailed question",
+            "Interview intent",
+            "Code evidence",
+            "Reasoning process",
+            "Detailed first-person answer",
+            "Design trade-offs",
+            "Failure and validation analysis",
+            "2-4 deep follow-up questions",
+            "Complete follow-up answers",
+            "Evidence boundary",
+            "at least one concrete evidence anchor",
+            "merge duplicate questions",
+            "final quality audit",
             "separate set of 3-5 scenario questions",
-            "scenario response framework",
             "strongest 3 major outputs by default",
             "up to 5 only when the user explicitly requests a comprehensive summary",
             "fewer than 20",
@@ -312,6 +322,16 @@ class SkillContractTests(unittest.TestCase):
             "Evidence Index",
         ):
             self.assertIn(phrase, output_section)
+        for retired_phrase in (
+            "concise reference answer",
+            "follow-up answer direction",
+            "scenario response framework",
+        ):
+            self.assertNotIn(retired_phrase, output_section)
+        self.assertNotRegex(
+            output_section,
+            r"(?i)\b\d[\d,]*\+?\s+(?:total\s+)?(?:lines?|words?|characters?|pages?|tokens?)\b",
+        )
 
     def test_existing_final_document_is_updated_without_silent_replacement(self) -> None:
         output_section = self._section("Build the Final Document")
@@ -328,14 +348,36 @@ class SkillContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         for phrase in (
-            "concise reference answer",
-            "likely follow-ups",
+            "in-memory evidence matrix",
+            "Detailed question",
+            "Interview intent",
+            "Code evidence",
+            "Reasoning process",
+            "Detailed first-person answer",
+            "Design trade-offs",
+            "Failure and validation analysis",
+            "2-4 deep follow-up questions",
+            "Complete follow-up answers",
+            "Evidence boundary",
+            "at least one concrete evidence anchor",
+            "merge duplicate questions",
+            "final quality audit",
             "separate set of 3-5 scenario questions",
             "fewer than 20",
             "evidence is insufficient",
             "never pad or fabricate",
         ):
             self.assertIn(phrase, text)
+        for retired_phrase in (
+            "concise reference answer",
+            "follow-up answer direction",
+            "scenario response framework",
+        ):
+            self.assertNotIn(retired_phrase, text)
+        self.assertNotRegex(
+            text,
+            r"(?i)\b\d[\d,]*\+?\s+(?:total\s+)?(?:lines?|words?|characters?|pages?|tokens?)\b",
+        )
 
     def test_role_guides_do_not_add_question_gates(self) -> None:
         role_guides = sorted(
@@ -498,6 +540,7 @@ class SkillContractTests(unittest.TestCase):
         text = ROLE_FRAMEWORK_PATH.read_text(encoding="utf-8")
         for heading in (
             "## Evidence Chain",
+            "## Evidence Matrix",
             "## Decision Reconstruction",
             "## Technical Depth",
             "## Evidence Classification",
@@ -519,6 +562,10 @@ class SkillContractTests(unittest.TestCase):
             "scenario",
             "one secondary role guide",
             "last supported node",
+            "at least one concrete evidence anchor",
+            "merge duplicate questions",
+            "complete follow-up answers",
+            "final quality audit",
         ):
             self.assertIn(phrase, lowered)
 
