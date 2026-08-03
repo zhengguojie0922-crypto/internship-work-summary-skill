@@ -6,6 +6,21 @@ Use this framework after target-role classification and before the selected role
 
 Build a bounded chain through entry point, user or system boundary, core logic, data flow, state or persistence, dependencies, configuration, error handling, and validation evidence. For every link record the definition, caller or consumer, relationship proved by source, and last supported node. A filename or search hit starts investigation but does not prove behavior.
 
+## Evidence Matrix
+
+Before drafting career material, build one in-memory evidence matrix for each major output. Keep it in working context rather than writing a research artifact. Each matrix records:
+
+- the business goal, user or system value, and bounded feature scope;
+- entry points, externally visible contracts, files, symbols, callers, and callees;
+- the end-to-end code path, data flow, state transitions, persistence, and dependencies;
+- business rules, important branches, lifecycle behavior, and configuration;
+- failure paths, edge cases, recovery or degradation, and security boundaries;
+- tests, logs, observability, configuration checks, and other validation evidence;
+- applicable Git attribution, user-provided attribution, and collaboration boundaries;
+- observable design choices, evidence-supported alternatives, trade-offs, and evidence gaps.
+
+Do not move to question drafting until the matrix follows the implementation beyond search hits and filenames. Each project-specific question must map to at least one concrete evidence anchor: a file and symbol, a proved call-path segment, a branch, a test, a configuration item, or an applicable commit. Record where the chain stops so later answers can distinguish facts from interpretation and missing runtime evidence.
+
 ## Decision Reconstruction
 
 For every material implementation identify the observable constraint, actual choice, available alternative only when repository or user evidence supports it, trade-off, failure mode, and validation evidence. Separate a choice visible in code from a decision attributable to the user. Do not invent rejected alternatives or design intent.
@@ -39,7 +54,11 @@ Use a conservative resume version for implementation evidence, a standard versio
 
 ## Interview Question Tree
 
-Generate questions from actual evidence in six branches: foundation, implementation detail, design alternative and trade-off, failure diagnosis, scale or extension, and scenario response. Each answer must cite the relevant chain, state the attribution boundary, and separate observed behavior from production assumptions. Omit a branch when the repository provides no relevant evidence instead of fabricating a scenario.
+Plan the question set from the completed evidence matrix. Distribute questions across the dimensions the repository actually supports: business context and scope; entry point and end-to-end call path; data, state, persistence, and lifecycle; algorithms and business rules; interfaces and module boundaries; failure handling, idempotency, concurrency, and security; performance and observability; testing and defect diagnosis; architecture and evolution; personal contribution and reflection; target-role depth; and scenario reasoning under changed constraints.
+
+Each question must cite the relevant chain, state the attribution boundary, and separate observed behavior from production assumptions. Use the full question unit in `interview-expansion.md`, including complete follow-up answers. If two candidates use substantially the same evidence anchors, central conclusion, and answer path, merge duplicate questions and replace them only with a distinct evidence-backed angle. Omit an unsupported dimension instead of filling it with a generic textbook question.
+
+Run a final quality audit before the final document write: verify distinct coverage, concrete anchors, complete question units, complete follow-up answers, attribution consistency, and explicit evidence boundaries. Repair failed items in memory by returning to the evidence matrix or question plan.
 
 ## Cross-Role Boundary
 
