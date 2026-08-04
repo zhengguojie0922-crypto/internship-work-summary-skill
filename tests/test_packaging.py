@@ -249,7 +249,7 @@ class PublishingSurfaceTests(unittest.TestCase):
         self.assertIn(NEW_REPOSITORY, text)
         self.assertIn("--skill summarizing-internship-work", text)
         self.assertIn("$summarizing-internship-work", text)
-        self.assertIn("1.2.0", text)
+        self.assertIn("1.3.0", text)
         self.assertNotIn("## \u4ece 0.2.x \u5347\u7ea7", text)
         for phrase in OLD_IDENTITY_PHRASES:
             self.assertNotIn(phrase, text)
@@ -300,18 +300,15 @@ class PublishingSurfaceTests(unittest.TestCase):
             "只有用户明确要求 Git 校验时",
             "完整姓名或完整邮箱精确匹配",
             "共同作者",
-            "默认选择证据最强的 3 项",
-            "明确要求全面总结时才扩展到最多 5 项",
+            "功能深挖章节",
+            "自然问答",
+            "完整独立回答",
+            "代码关系",
+            "默认选择证据最强的 2 项",
+            "其他已验证产出",
+            "15-20 个",
             "3-5 个独立场景题",
-            "证据不足时少于 20 个",
             "代码证据锚点",
-            "详细问题",
-            "考察意图",
-            "代码依据",
-            "思考过程",
-            "详细参考回答",
-            "设计取舍",
-            "异常与验证",
             "深入追问",
             "逐条完整回答",
             "保留无关的已验证内容",
@@ -320,6 +317,8 @@ class PublishingSurfaceTests(unittest.TestCase):
             self.assertIn(phrase, text)
         self.assertNotIn("简洁参考回答", text)
         self.assertNotIn("回答方向", text)
+        self.assertNotIn("每题完整包含详细问题", text)
+        self.assertNotIn("详细问题、考察意图、代码依据、思考过程", text)
 
     def test_metadata_and_version_are_aligned_with_the_current_release(self) -> None:
         metadata = parse_openai_metadata(read_utf8(METADATA))
@@ -336,8 +335,8 @@ class PublishingSurfaceTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "quoted string"):
             parse_openai_metadata("interface:\n  display_name: Codebase Work Impact\n")
-        self.assertEqual("1.2.0", read_utf8(VERSION).strip())
-        self.assertIn("1.2.0", read_utf8(README))
+        self.assertEqual("1.3.0", read_utf8(VERSION).strip())
+        self.assertIn("1.3.0", read_utf8(README))
 
     def test_readme_distinguishes_structural_verification_from_model_behavior(self) -> None:
         text = read_utf8(README)
@@ -348,7 +347,7 @@ class PublishingSurfaceTests(unittest.TestCase):
             "git diff --check",
             "结构性测试",
             "模型层行为",
-            "`1.2.0` 未执行独立模型前向验收",
+            "`1.3.0` 未执行独立模型前向验收",
             "不代表 DS、Claude",
             "不代表完整模型矩阵",
         ):
